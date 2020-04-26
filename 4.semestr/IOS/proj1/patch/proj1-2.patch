@@ -1,0 +1,48 @@
+--- dirgraph.odevzdany	2020-04-17 14:26:32.160127000 +0200
++++ dirgraph	2020-04-18 00:57:54.000000000 +0200
+@@ -17,6 +17,12 @@
+ #-------------------------------------------------------------------------------
+ # flagy a promněné
+ flag_n=0
++flag_total=0
++
++ponitless=0
++eight_or_nine=0      #jelikož Merlin umí česky ale Eva ne
++place_size=0
++place_name=0
+ 
+ #Všechny kategorie: velikost:           last_cange:
+ lt_100B=0           #100                1
+@@ -111,11 +117,19 @@
+     #toto odfiltruje když ls -lApR vypisuje cestu k souboru který vypisuje
+     if echo "$i" | egrep -q '^/' ;then
+         #nic se neděje
++        ponitless=1
+     else
+-        #na začátku ls -lApR vypisuje total [nějaké čislo], to nás nezajímá
++        #na začátku ls -lApR vypisuje total [nějaké čislo] na Evě, to nás nezajímá
+         if echo "$i" | egrep -q '^total' ;then
+             #pokud je total nalezen, ignoruje se i to co je hned za ním
+             flag_total=1
++            eight_or_nine=9
++        fi
++        #na začátku ls -lApR vypisuje celkem [nějaké čislo] na merlinovy, to nás nezajímá
++        if echo "$i" | egrep -q '^celkem' ;then
++            #pokud je total nalezen, ignoruje se i to co je hned za ním
++            flag_total=1
++            eight_or_nine=8
+         fi
+         #flag_total je aktivní po dobu dvou běhu cyklu (včetně toho ve kterém se nastavil)
+         #díky tomu bude ignorováno slovo total a číslo za ním
+@@ -179,9 +193,8 @@
+ 
+             #pokud název končí na / znamená to, že se jedná o adresář
+             #toto se provede taky u ignorovaných souboru
+-            if [ "$place_name" -eq 9 ];then
+-            
+-                if echo "$i" | egrep -q '.*/$' ||[ "$i" == "$ignore_file" ];then
++            if [ "$place_name" -eq "$eight_or_nine" ];then
++                if echo "$i" | egrep -q '.*/$' || [ "$i" == "$ignore_file" ];then
+                     #zde se počítá počet adresářu které soubor obsahuje
+                     count_files=$(($count_files-1))
+                     if echo "$i" | egrep -q '.*/$' ;then

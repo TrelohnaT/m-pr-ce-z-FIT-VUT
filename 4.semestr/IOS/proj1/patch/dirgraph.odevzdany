@@ -1,0 +1,448 @@
+#!/bin/sh
+export POSIXLY_CORRECT=yes
+# 1. Projekt v predmetu IOS
+# Autor: Vaclav Dolecek (xdolec03)
+# datum: 21.03.2020
+#-------------------------------------------------------------------------------
+# par slov o tomto programu
+# 1) i pres veskere snahy mi tu funkce nefungovaly tak, jak jsem chtel...proto tu nejsou
+# 2) pokusím se poučit z předchozích let a neudělat nějakou formální chybu aby jste neměli důvod mě vyhodit
+# 3) Vím že toto nikdo číst nebude, proto to tu taky píšu
+
+#-------------------------------------------------------------------------------
+# Poznámky pro programátor:
+# Jsem si vědom, že je to dost "dřevorubecky" naspané, ale je to funkči (nebo aspoň na Evě)
+# což je dle mého to hlavni
+
+#-------------------------------------------------------------------------------
+# flagy a promněné
+flag_n=0
+
+#Všechny kategorie: velikost:           last_cange:
+lt_100B=0           #100                1
+lt_1KiB=0           #1 000              2
+lt_10KiB=0          #10 000             3
+lt_100KiB=0         #100 000            4
+lt_1MiB=0           #1 000 000          5
+lt_10MiB=0          #10 000 000         6
+lt_100MiB=0         #100 000 000        7
+lt_1GiB=0           #1 000 000 000      8
+gt_1GiB=0           #                   9
+
+#proměnné pro normalizaci výstupu
+terminal_size=79
+ratio_of_normalization=0
+
+#informace o otecovém adresáři
+count_directories=1
+count_files=0
+
+#používá se pro mazání počitadla u adresářu a ignorovaných souboru
+last_change=0
+
+#-------------------------------------------------------------------------------
+# zde se zkontrolují všecky argumenty a nastaví se poatřičné flagy
+arg_count=$#
+arg_Aktualni=0
+
+# na začátku počítám s tím, že hledám tam kde se nacházím
+place_for_looking=$PWD
+
+#zjištění, zda je terminál přítomen
+if test -t ;then
+    flag_terminal=1
+    terminal_size=$(tput cols)
+    #možná je třeba místo na znak nového řádku, co já vím, když tak to smaž(u)
+    terminal_size=$(($terminal_size-1))
+fi
+#uprava delky řádku aby se to tam vlezlo (protože tam je ještě název té kategorie)
+terminal_size=$(($terminal_size-12))
+
+#zpracovávání argumentů
+while [ $arg_Aktualni -lt $arg_count ];do
+
+    arg_Aktualni=$((arg_Aktualni+1))
+    
+    case $1 in
+
+        -i )
+            shift
+            ignore_file="$1"
+        ;;
+
+        -n )
+            flag_n=1
+        ;;
+
+        # default
+        *)
+            if [ "$1" != "" ];then
+                #zde se kontroluje, zda nepřišel nepodporovaný argument
+                if echo "$1" | egrep -q '^-' ;then
+                    if [ "$1" != "-i" ] || [ "$1" != "-n" ];then
+                        echo "bad argument" >&2
+                        exit 1
+                    fi
+                fi
+                place_for_looking="$1"
+                if [ ! -d "$place_for_looking" ] ;then
+                    echo "\"$place_for_looking\" does not exist" >&2
+                    exit 1
+                fi
+                
+            fi
+        ;;
+    esac
+
+
+    shift
+done
+#pokud argumenty projdou jdeme na zpracovávání samotné
+#odložím si tu jen: ls -lApR
+
+#raw_data=$(find "$place_for_looking" -type f)
+raw_data=$(ls -lApR "$place_for_looking")
+
+#pokud nedostanu žádné argumenty, prohledávám aktuální adresář a nic neignoruji
+#tento for projete každé "slovo" v proměnné raw_data a vybere jen to co nás zajímá
+#což je název souboru a velikoust souboru
+for i in $raw_data
+do
+    #toto odfiltruje když ls -lApR vypisuje cestu k souboru který vypisuje
+    if echo "$i" | egrep -q '^/' ;then
+        #nic se neděje
+    else
+        #na začátku ls -lApR vypisuje total [nějaké čislo], to nás nezajímá
+        if echo "$i" | egrep -q '^total' ;then
+            #pokud je total nalezen, ignoruje se i to co je hned za ním
+            flag_total=1
+        fi
+        #flag_total je aktivní po dobu dvou běhu cyklu (včetně toho ve kterém se nastavil)
+        #díky tomu bude ignorováno slovo total a číslo za ním
+        if [ "$flag_total" -eq 1 ];then
+
+            stop_wait=$((stop_wait+1))
+            if [ "$stop_wait" -eq 2 ];then
+                flag_total=0
+                stop_wait=0
+            fi
+        else
+
+            #počítadlo abych si vykousnul velikost souboru
+            place_size=$((place_size+1))
+            #počítadlo abych si vykousnul název souboru
+            place_name=$((place_name+1))
+
+            #zde se určuje, do jaké velikostní kategorie soubour patří
+            if [ "$place_size" -eq  5 ];then
+
+                if [ "$i" -lt 100 ]; then
+                    lt_100B=$(($lt_100B+1))
+                    last_change=1
+
+                elif [ "$i" -lt 1024 ] && [ "$i" -gt 100 ];then
+                    lt_1KiB=$((lt_1KiB+1))
+                    last_change=2
+                    
+                elif [ "$i" -lt 10240 ] && [ "$i" -gt 1024 ];then
+                    lt_10KiB=$((lt_10KiB+1))
+                    last_change=3
+
+                elif [ "$i" -lt 102400 ] && [ "$i" -gt 10240 ];then
+                    lt_100KiB=$((lt_100KiB+1))
+                    last_change=4
+
+                elif [ "$i" -lt 1048576 ] && [ "$i" -gt 102400 ];then
+                    lt_1MiB=$((lt_1MiB+1))
+                    last_change=5
+                    
+                elif [ "$i" -lt 10485760 ] && [ "$i" -gt 1048576 ];then
+                    lt_10MiB=$((lt_10MiB+1))
+                    last_change=6
+
+                elif [ "$i" -lt 104857600 ] && [ "$i" -gt 10485760 ];then
+                    lt_100MiB=$((lt_100MiB+1))
+                    last_change=7
+
+                elif [ "$i" -lt 1073741824 ] && [ "$i" -gt 104857600 ];then
+                    lt_1GiB=$((lt_1GiB+1))
+                    last_change=8
+
+                elif [ "$i" -gt 1073741824 ];then
+                    gt_1GiB=$((gt_1GiB+1))
+                    last_change=9
+
+                fi
+
+                count_files=$(($count_files+1))
+            fi
+
+            #pokud název končí na / znamená to, že se jedná o adresář
+            #toto se provede taky u ignorovaných souboru
+            if [ "$place_name" -eq 9 ];then
+            
+                if echo "$i" | egrep -q '.*/$' ||[ "$i" == "$ignore_file" ];then
+                    #zde se počítá počet adresářu které soubor obsahuje
+                    count_files=$(($count_files-1))
+                    if echo "$i" | egrep -q '.*/$' ;then
+                        count_directories=$(($count_directories+1))
+                    fi
+                    #zde se odčítá ignorovaný soubor nebo složka z počítadla
+                    case $last_change in
+
+                    1 )
+                        lt_100B=$(($lt_100B-1))
+                    ;;
+
+                    2 )
+                        lt_1KiB=$((lt_1KiB-1))
+                    ;;
+
+                    3 )
+                        lt_10KiB=$((lt_10KiB-1))
+                    ;;
+
+                    4 )
+                        lt_100KiB=$((lt_100KiB-1))
+                    ;;
+
+                    5 )
+                        lt_1MiB=$((lt_1MiB-1))
+                    ;;
+
+                    6 )
+                        lt_10MiB=$((lt_10MiB-1))
+                    ;;
+
+                    7 )
+                        lt_100MiB=$((lt_100MiB-1))
+                    ;;
+
+                    8 )
+                        lt_1GiB=$((lt_1GiB-1))
+                    ;;
+
+                    9)
+                        gt_1GiB=$((gt_1GiB-1))
+                    ;;
+
+                    esac
+
+                fi
+                place_size=0
+                place_name=0
+            fi
+        fi
+    fi
+    #echo data_size: $data_size
+done
+
+#zde se počítá normalizace
+#pokud je -n a je terminal aktivní, v $terminal_size šířka terminálu-13
+#pokud je -n a není ternimál aktivní, v $terminal_size je 79
+#pak zde kontroluje, zda-li nějaká kategorie nepřesahuje max délku řádku
+#a pokud nějaká ano, tak se všechny vydělí dvěmi dokud přesahovat nepřestane
+#Neelegantní, ale jednoduché a funkčí. Všechny řádky jsou normalizovány dle
+#stejného poměru
+if [ "$flag_n" -eq 1 ];then
+
+    while [ $lt_100B -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_1KiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_10KiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_100KiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_1MiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_10MiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_100MiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $lt_1GiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+
+    while [ $gt_1GiB -gt $terminal_size ];do
+        lt_100B=$(($lt_100B/2))
+        lt_1KiB=$(($lt_1KiB/2))
+        lt_10KiB=$(($lt_10KiB/2))
+        lt_100KiB=$(($lt_100KiB/2))
+        lt_1MiB=$(($lt_1MiB/2))
+        lt_10MiB=$(($lt_10MiB/2))
+        lt_100MiB=$(($lt_100MiB/2))
+        lt_1GiB=$(($lt_1GiB/2))
+        gt_1GiB=$(($gt_1GiB/2))
+    done
+fi
+
+#zde se provádí výsledný tisk výstupu
+# jsou tisknuty pomocí cyklu
+#sem vždy už příjde konečný počet kolik čeho vytisknout
+echo "Root directory: $place_for_looking"
+echo "Directories: $count_directories"
+echo "All files: $count_files"
+echo "File size histogram:"
+
+#-----------------------------------------------------------------<100 B
+echo -n "  <100 B  : "
+
+while [ $lt_100B -gt 0 ];do
+    echo -n "#"
+    lt_100B=$(($lt_100B-1))
+done
+echo ""
+
+#-----------------------------------------------------------------<1 KiB
+echo -n "  <1 KiB  : "
+
+while [ $lt_1KiB -gt 0 ];do
+    echo -n "#"
+    lt_1KiB=$(($lt_1KiB-1))
+done
+echo ""
+
+#----------------------------------------------------------------<10 KiB
+echo -n "  <10 KiB : "
+
+while [ $lt_10KiB -gt 0 ];do
+    echo -n "#"
+    lt_10KiB=$(($lt_10KiB-1))
+done
+echo ""
+
+#---------------------------------------------------------------<100 KiB
+echo -n "  <100 KiB: "
+
+while [ $lt_100KiB -gt 0 ];do
+    echo -n "#"
+    lt_100KiB=$(($lt_100KiB-1))
+done
+echo "" 
+
+#-----------------------------------------------------------------<1 MiB
+echo -n "  <1 MiB  : "
+
+while [ $lt_1MiB -gt 0 ];do
+    echo -n "#"
+    lt_1MiB=$(($lt_1MiB-1))
+done
+echo ""
+
+#----------------------------------------------------------------<10 MiB
+echo -n "  <10 MiB : "
+
+while [ $lt_10MiB -gt 0 ];do
+    echo -n "#"
+    lt_10MiB=$(($lt_10MiB-1))
+done
+echo "" 
+
+#---------------------------------------------------------------<100 MiB
+echo -n "  <100 MiB: "
+
+while [ $lt_100MiB -gt 0 ];do
+    echo -n "#"
+    lt_100MiB=$(($lt_100MiB-1))
+done
+echo "" 
+
+#-----------------------------------------------------------------<1 GiB
+echo -n "  <1 GiB  : "
+
+while [ $lt_1GiB -gt 0 ];do
+    echo -n "#"
+    lt_1GiB=$(($lt_1GiB-1))
+done
+echo "" 
+
+#----------------------------------------------------------------=>1 GiB
+echo -n "  >=1 GiB : "
+
+while [ $gt_1GiB -gt 0 ];do
+    echo -n "#"
+    gt_1GiB=$(($gt_1GiB-1))
+done
+echo "" 
+
+#end
+exit 0

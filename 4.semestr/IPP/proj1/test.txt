@@ -1,0 +1,5 @@
+.IPPcode20
+# WRITE neprovádí za výstupem odřádkování, pokud to není diktováno argumenty
+WRITE string@totojeuvozovka"atotoapos'
+rite string@hovno
+write string@totojestring

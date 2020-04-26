@@ -1,0 +1,20 @@
+--- dirgraph.odevzdany	2020-04-17 14:26:32.160127000 +0200
++++ dirgraph	2020-04-17 14:27:49.000000000 +0200
+@@ -45,6 +45,8 @@
+ arg_count=$#
+ arg_Aktualni=0
+ 
++ponitless=0
++
+ # na začátku počítám s tím, že hledám tam kde se nacházím
+ place_for_looking=$PWD
+ 
+@@ -110,7 +112,7 @@
+ do
+     #toto odfiltruje když ls -lApR vypisuje cestu k souboru který vypisuje
+     if echo "$i" | egrep -q '^/' ;then
+-        #nic se neděje
++        ponitless=1
+     else
+         #na začátku ls -lApR vypisuje total [nějaké čislo], to nás nezajímá
+         if echo "$i" | egrep -q '^total' ;then

@@ -1,0 +1,17 @@
+Archive:  xdolec03.zip
+  inflating: parse.php               
+  inflating: readme1.md              
+
+About script parse.php 
+	Script of filtr type (parse.php made in PHP 7.4) will read IPPcode20
+	from stdin, then will check lexical and syntact correctness. After that
+	will ride down XML code at stdout.
+
+Parametres
+	--help -> ride down information about this script
+	-h -> ride down information about this script
+	stdin -> here must be ride down code which you want to parse
+
+In case of any question, please contact me by e-mail, or by FB
+	autor: Václav Dolecek (xdolec03)
+0
