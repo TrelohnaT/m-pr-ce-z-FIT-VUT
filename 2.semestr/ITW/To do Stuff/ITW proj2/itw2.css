@@ -1,0 +1,150 @@
+#main
+{
+  text-align: center;
+  width: 69%;
+  padding-left: 15.5%;
+  padding-right: 15.5%;
+  font-family: Times;
+  font-size: 20px;
+  background-color: lightgrey;
+  padding-bottom: 5%;
+}
+
+#first
+{
+  padding-top: 1%;
+  background-color: orange;
+}
+
+
+
+.title a
+{
+  font-size: 40px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: darkblue;
+  margin-bottom: 0%;
+  padding-bottom: 2%;
+}
+
+.menu a:hover
+{
+  color: blue;
+  border-color: blue;
+}
+
+.menu
+{
+  background-color: white;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-bottom: solid;
+  border-top: solid;
+  border-color: lightgrey;
+}
+.menu a
+{
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  border: solid;
+}
+
+.nadpis
+{
+  padding-top: 2%;
+  font-size: 22.5px;
+  text-decoration: underline;
+  background-color: white;
+  text-transform: uppercase;
+}
+
+.menu1
+{
+  background-color: white;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-bottom: solid;
+  border-top: solid;
+  border-color: lightgrey;
+  border-top: 0;
+}
+
+.menu1 a
+{
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  border: solid;
+}
+
+.menu1 a:hover
+{
+  color: blue;
+  border-color: blue;
+}
+#Obsah
+{
+  background-color: white;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+#Obsah .thumbnail p
+{
+  margin: 0%;
+  font-size: 30px;
+  text-transform: uppercase;
+  text-decoration: underline;
+  padding-bottom: 1%;
+}
+
+#Obsah .text p
+{
+  padding-left: 5%;
+  padding-right: 5%;
+  text-align: left;
+}
+
+
+#Obsah .text ul
+{
+  text-align: left;
+  width: 35%;
+  padding-bottom: 5%;
+  padding-left: 5%;
+}
+
+#Obsah .text li a
+{
+  text-decoration: none;
+}
+
+#Obsah .titul
+{
+  font-weight: bold;
+  color: darkblue;
+}
+
+#Obsah .obrazek_maly img
+{
+  float: right;
+  clear: right;
+  margin-right: 20%;
+  border: solid;
+}
+
+
+
+
+
+/*konec*/

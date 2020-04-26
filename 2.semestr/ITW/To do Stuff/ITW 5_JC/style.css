@@ -1,0 +1,136 @@
+
+
+.outer-frame
+{
+    font-family: sans-serif;
+    margin: auto;
+    margin-top: 20px;
+    font-size: 0.85em;
+    max-width: 20%;
+    padding: 140px;
+    background: url("images/blue/tr.png") no-repeat right top,
+        url("images/blue/bl.png") no-repeat left bottom,
+        url("images/blue/tl.png") no-repeat left top,
+        url("images/blue/br.png") no-repeat right bottom,
+        url("images/blue/l.png") repeat-y left,
+        url("images/blue/r.png") repeat-y right,
+        url("images/blue/t.png") repeat-x top,
+        url("images/blue/b.png") repeat-x bottom;
+    border: solid;
+}
+
+#outer-frame-b
+{
+    font-family: sans-serif;
+    margin: auto;
+    margin-top: 20px;
+    font-size: 0.85em;
+    max-width: 20%;
+    padding: 140px;
+    background: url("images/blue/tr.png") no-repeat right top,
+        url("images/blue/bl.png") no-repeat left bottom,
+        url("images/blue/tl.png") no-repeat left top,
+        url("images/blue/br.png") no-repeat right bottom,
+        url("images/blue/l.png") repeat-y left,
+        url("images/blue/r.png") repeat-y right,
+        url("images/blue/t.png") repeat-x top,
+        url("images/blue/b.png") repeat-x bottom;
+    border: solid;
+}
+
+
+
+#outer-frame-r
+{
+    font-family: sans-serif;
+    margin: auto;
+    margin-top: 20px;
+    font-size: 0.85em;
+    max-width: 20%;
+    padding: 140px;
+    background: url("images/red/tr.png") no-repeat right top,
+        url("images/red/bl.png") no-repeat left bottom,
+        url("images/red/tl.png") no-repeat left top,
+        url("images/red/br.png") no-repeat right bottom,
+        url("images/red/l.png") repeat-y left,
+        url("images/red/r.png") repeat-y right,
+        url("images/red/t.png") repeat-x top,
+        url("images/red/b.png") repeat-x bottom; 
+    border: solid;
+}
+
+#outer-frame-y
+{
+    font-family: sans-serif;
+    margin: auto;
+    margin-top: 20px;
+    font-size: 0.85em;
+    max-width: 20%;
+    padding: 140px;
+    background: url("images/yellow/tr.png") no-repeat right top,
+        url("images/yellow/bl.png") no-repeat left bottom,
+        url("images/yellow/tl.png") no-repeat left top,
+        url("images/yellow/br.png") no-repeat right bottom,
+        url("images/yellow/l.png") repeat-y left,
+        url("images/yellow/r.png") repeat-y right,
+        url("images/yellow/t.png") repeat-x top,
+        url("images/yellow/b.png") repeat-x bottom; 
+    border: solid;
+}
+
+
+
+
+#inner-frame {
+    background-color: #C8C8C8;
+    box-shadow: gray 5px 5px 10px;
+    padding: 5px 10px;
+    border: solid 10px;
+    border-image: url("images/border.png");
+    border-image-slice: 5;
+}
+
+#underlying-frame
+{
+    margin: -200px 20px  0px 20px;
+    background-color: #0c0;
+    padding: 100px;
+}
+
+#selector
+{
+    display: flex;
+    justify-content: center;
+}
+
+
+#goleft, #goright
+{
+    display: flex;
+    justify-content: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*konec*/

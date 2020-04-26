@@ -1,0 +1,366 @@
+#!/bin/sh
+
+# 1. Projekt v predmetu IOS
+# Autor: Vaclav Dolecek (xdolec03)
+# datum: poslední dva týdny
+#-------------------------------------------------------------------------------
+# par slov o tomto programu
+# 1) i pres veskere snahy mi tu funkce nefungovaly tak, jak jsem chtel...proto tu nejsou
+# 2) filtry nejsou implementovany resp. nejsou propojeny s prikazy
+
+#-------------------------------------------------------------------------------
+# !TO DO!
+# filtry nejsou jeste plne implementovany
+# nerozbit si to kdyz to budu vylepsovat
+#
+#
+# pokud je vecer pred odevzdanim, uz na to nesahej nebo si to rozbijes
+
+#-------------------------------------------------------------------------------
+# Legenda
+  # oddelovac sekci programu: #-----------
+#-------------------------------------------------------------------------------
+
+# aktulaní argument je na zacatku nula
+arg_Aktualni=0
+
+# výpis kolik je celkem argumentu
+echo celkovy pocet argumentu $#
+
+arg_All=$#
+
+#-------------------------------------------------------------------------------
+
+# pokud je program wana zacolan, ale nedostal zadne arugumenty
+# spusti se tento IF a vypise se chybove hlaseni
+# pote program skonci
+if [ "$1" = "" ];then
+  echo "Program wana byl zavolán, avsak nedostal nic, s cím by mohl pracovat.
+Proto byl ukoncen."
+  exit 0
+fi
+
+# podmínka, pokud je aktualní argument mensí nez
+# ceslkový pocet argumentu
+while [ $arg_Aktualni -lt $arg_All ]; do
+
+  #inkrementace nebot se argumenty zacinají od 1.
+  arg_Aktualni=$((arg_Aktualni+1))
+
+  # kdyz je argument roven void, ukonci se program
+  if [ "$1" = "" ];then
+    echo "Skoncil jsem a vse slo dle planu."
+    exit 0
+  fi
+
+  #vypis informací o argumentech
+  echo toto je filtr/prikaz $arg_Aktualni., je to $1
+
+  #/*case pro 1 argument
+  # *kazdy case je jeden mozný první argument
+  case $1 in
+#-------------------------------------------------------------------------------
+  #case pro filtry
+    -b )
+        # posunutí na dalsí argument kde
+        # kde má být rozsireni tohoto filtru
+        shift
+
+        datetime_b=$1 # promena kde bude ulozene argument filtru
+
+        echo datetime_b: "$datetime_b"
+
+        # podmínka zda je to opravdu datum
+        if echo "$datetime_b" | egrep -q '^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}:[0-9]{2}$' ;then
+              # kontrolni vypis zda if prosel
+              echo uvintr IFu datetime_b: "$1"
+              # toto upravi datum v datetime_b na porovnavatelny format
+              datum_b_New=$(echo $datetime_b | tr "-" "\0" | tr " " "\0"| tr ":" "\0")
+              # datum_b_New je nosicem datumu, ktery je upraveny na porovnanani
+              # kontrolni vypis
+               echo upraveny datum_b: "$datum_b_New"
+        else
+          # chybove hlaseni pri nedodrzeni formatu casu
+          echo "Format casu je \"RRRR-MM-DD HH-MM-SS\" prosim opravit"
+
+        fi
+        echo "Filtr -b nebyl implementovan."
+
+    ;;
+
+    -a )
+      # preda se informace o pouzitem filtru
+      filtr_Aktualni=$1
+
+      # posunutí na dalsí argument kde
+      # kde má být rosireni tohoto filtru
+      shift
+
+      datetime_a=$1 # promena kde bude ulozene argument filtru
+
+      echo datetime_a: "$datetime_a"
+      # podminka zda je to opravdu datum
+      if echo "$datetime_a" | egrep -q '^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]][0-9]{2}:[0-9]{2}:[0-9]{2}$' ;then
+            # kontrolní výpis, zda if prosel
+            echo uvintr IFu datetime_a: "$1"
+            # toto upravi datum v datetime_a na porovnavatelny format
+            datum_a_New=$(echo $datetime_a | tr "-" "\0" | tr " " "\0"| tr ":" "\0")
+            # datum_a_New je nosicem datumu, kteru je upraveny na porovnavani
+            # kontrolni vypis
+             echo upraveny datum_a: "$datum_a_New"
+      else
+        # chybove hlaseni pri nedodrzeni formatu casu
+        echo "Format casu je \"RRRR-MM-DD HH-MM-SS\" prosim opravit"
+
+      fi
+      echo "Filtr -a nebyl implementovan."
+
+    ;;
+
+    -ip )
+      # posun na dalsi argument kde je hledaná IP adresa
+      shift
+      # Hledaná IP adresa je ulozena do promenné IP
+      IP=$1
+      # kontrolní výpis IP
+      echo IP je:"$IP"
+
+      if echo "$IP" | egrep -q '^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\.[0-9]{2}$' ;then
+        # kontrolní vypis, zda if prosel
+        echo "Filtr -ip nebyl implementovan."
+
+      fi
+
+    ;;
+
+    -uri )
+      # posun na dalsi argument, kde bude ulozena uri
+      shift
+      # ulozeni dalsiho argumentu to uri promenne
+      URI=$1
+      # kontrolní vypis URI
+      echo URI je:"$URI"
+      # kontrola zda je URI spravného formátu
+      if echo "$URI" | egrep -q '^.*$' ;then
+
+        echo "filtr -uri nebyl implementovan."
+
+      fi
+    ;;
+#-------------------------------------------------------------------------------
+  #case pro příkazy
+    list-ip )
+      # cyklus zaruci, ze se vypisou vsechny soubory dle tohoto prikazu
+      while [ $arg_Aktualni -le $# ];
+      do
+      # posunutí na dalši argument, kde bude soubor/soubory .log
+      shift
+
+        arg_Aktualni=$((arg_Aktualni+1))
+      # otevre, vybere a vytiskne ip ze souboru
+      # jedno jestli to je .log/.gz soubor
+      zcat -f $1 | awk '{print $1}' | sort -u | while read ip;
+        do
+          echo "$ip"
+
+        done
+
+      done
+      exit 0
+    ;;
+
+    list-hosts )
+      # cyklus zaruci, ze se vypisou vsechny soubory dle tohoto prikazu
+      while [ $arg_Aktualni -le $# ];
+      do
+      # posunutí na dalsi argument, kde bude soubor/soubory .log
+      shift
+      # kontrola, zda je to opradu soubor .log
+      # inkrementace porictadla argumentu
+      arg_Aktualni=$((arg_Aktualni+1))
+      # otevre, vybere a vytiskne host ze souboru
+      # jedno jestli to je .log/.gz soubor
+          zcat -f $1 | awk '{print $1}' | while read host;
+          do
+            # ziská z host pomoci ip
+            host $host | awk ' {print $5}' | sed -e "s/3(NXDOMAIN)/$host/"
+          done
+      done
+      exit 0
+      ;;
+
+    list-uri )
+      # cyklus zaruci, ze se vypisou vsechny soubory dle tohoto prikazu
+      while [ $arg_Aktualni -le $# ];
+      do
+      # posunutí na dalsi argument, kde má být soubor/soubory .log
+      shift
+      # inkrementace porictadla argumentu
+      arg_Aktualni=$((arg_Aktualni+1))
+      # otevre, vybere a vytiskne uri ze souboru
+      # jedno jestli to je .log/.gz soubor
+        zcat -f $1 | awk '{print $7}' | sort -u | while read URI;
+        do
+          # vytiske pouze uri (stringy zacinajici /)
+          if echo "$URI" | egrep -q '^/.*$';then
+            # toto odstrani / ze zacatku
+            echo "$URI"
+          fi
+        done
+      done
+      exit 0
+    ;;
+
+    hist-ip )
+      # cyklus zaruci, ze se vypisou vsechny soubory dle tohoto prikazu
+      while [ $arg_Aktualni -le $# ];
+      do
+      # posunutí na dalsi argument kde má být soubor/soubory .log
+      shift
+      # inkrementace porictadla argumentu
+      arg_Aktualni=$((arg_Aktualni+1))
+      # otevre, vybere a vytiskne ip ze souboru
+      # jedno jestli to je .log/.gz soubor
+      # navic to jeste spocita kolikrat se dana ip v souboru vyskytovala
+        zcat -f $1 | awk '{print $1}' | sort | uniq -c | sort -r -n | while read ip_hodnota ip;
+        do
+          # vytiskne to samotnou ip a kolikrat se v souboru vyskytla
+          printf "$ip ($ip_hodnota)"
+          printf '%0.s#' $(seq -w 1 "$ip_hodnota")
+          printf "\n"
+        done
+      done
+      exit 0
+    ;;
+
+    hist-load )
+      # cyklus zaruci, ze se vypisou vsechny soubory dle tohoto prikazu
+      while [ $arg_Aktualni -le $# ];
+      do
+      # posunutí na dalsí argument kde má byt soubor/soubory .log
+      shift
+
+        # usporada pomoci sort a nahraje ip a datumu do promennych
+        # pomoci cyklu se projede kazdy radek
+        load_Vytisk=$(zcat -f  $1 | sort | while read ip nezajem nezajem datum nezajem;
+        do
+          # uprava datumu podle vzoru, mazani [ a prenastavovani mecise na cislo
+          # oddeleni datumu od casu
+          datum_Novy=$(echo $datum | tr "[" "\0" | tr "Jar" "01\0" | tr "Feb" "02\0" |
+           tr "Mar" "03\0" | tr "Apr" "04\0" | tr "May" "05\0" | tr "Jun" "06\0" |
+           tr "Jul" "07\0" | tr "Aug" "08\0" | tr "Sep" "09\0" | tr "Oct" "10\0" |
+           tr "Nov" "11\0" | tr "Dec" "12\0" | awk '{print $1}')
+          # nemazat nebo se to posere
+           echo $datum_Novy
+        done)
+        # serazeni, vyhozeni duplikatu, serazeni znovu od nejvetnejsiho
+        # v cyklu se pak nacita do promenych
+        printf "$load_Vytisk" | sort | uniq -c | sort -n -r | while read mnoztvi RMD;
+        do
+          # uprava RMD a serazeni do sprvneho tvaru Rok Mesic Den (pro zkratka RMD)
+          RMD=$(echo "$RMD" | sed -r 's/([0-9]{2})\/([0-9]{2})\/([0-9]{4}):([0-9:]{2})/\3-\2-\1 \4/g')
+          # samozny tisk toho vseho
+          printf "$RMD ($mnoztvi): "
+          printf '%0.s#' $(seq 1 "$mnoztvi")
+          printf "\n"
+        done
+        # ukonci to aby se to nezajeklo do nekonecna
+        if [ $arg_Aktualni -eq $# ];then
+          exit 0
+        fi
+
+      done
+      exit 0
+    ;;
+#-------------------------------------------------------------------------------
+  # case pro soubory
+    # nezazipovany
+    *.log )
+      # vynulování pocitadla argumentu
+      arg_Aktualni=0
+      # cyklus pro vypisováni .log souboru
+      # podmínka platí pokud je arg_Aktualni mensi nebo rovno $# (pocet arg)
+      while [ $arg_Aktualni -le $# ]; do
+        # inkrementace pocitadla argumentu
+        arg_Aktualni=$((arg_Aktualni+1))
+        # vytisknutí aktulaního souboru
+        cat $1
+        # posun na dalsi argument
+        if [ $arg_Aktualni -ne $# ];then
+          shift
+        fi
+      done
+    ;;
+    # zazipovany
+    *.gz )
+      # vynulovani pocitadla argumentu
+      arg_Aktualni=0
+      # vyklus pro vypisovani .gz souboru
+      # podminka plati pokud je arg_Aktualni mensi nebo rovno $# (pocet arg)
+      while [ $arg_Aktualni -le $# ]; do
+        # inkrementace pocitadla argumentu
+        arg_Aktualni=$((arg_Aktualni+1))
+        # odzipovani a tisk souboru
+        gunzip -c $1
+        # posun na dalsi argument
+        if [ $arg_Aktualni -ne $# ];then
+          shift
+        fi
+      done
+    ;;
+#-------------------------------------------------------------------------------
+    -help )
+        echo "Toto je Help pro wana.sh
+        ./wana -> volani programu
+
+        *Podpora*
+        .log soubory jsou podporovany
+        .gz soubory jsou podporovany
+
+        *Spusteni*
+        ./wana [filtr] [prikaz] [LOG] [LOG] [...]
+
+        *Filtry*
+        -a \"datum cas\" -> zobrazi to co je za timto datem (neimplementovano)
+        -b \"datum cas\" -> zobrazi to co je pred timto datem (neimplementovano)
+        -ip \"ip\" -> zobrazi pouze to, co se tyka vybrane ip (neimplementovano)
+        -uri \"uri\" -> zobrazi pouze to, co se tyka vybrane uri (neimplementovano)
+
+        *Prikazy*
+        list-ip -> vypise vsechny ip ze souboru
+        list-hosts -> vypise vsechny hosts dle ip ze se souboru
+        list-uri -> vypise vsechny uri ze souboru
+        hist-ip -> vypise vsechny ip ze souboru a kolikrat se tam vyskytuji
+        hist-load -> vypise pristupy ze souboru a kolik jich jeden datum"
+        exit 0
+    ;;
+#-------------------------------------------------------------------------------
+  # chybové hláseni
+    * )
+      echo "zle zadany prikaz: $1"
+      exit 1
+    ;;
+  esac
+  shift
+done
+exit 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#konec

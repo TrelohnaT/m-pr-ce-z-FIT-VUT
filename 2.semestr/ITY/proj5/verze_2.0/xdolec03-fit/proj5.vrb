@@ -1,0 +1,16 @@
+\frametitle{Pseudo kód}
+\begin{itemize}
+    \item Toto je jedna z~mnoha variací algoritmu:\footnote{\tiny\href{https://tiny.cc/dt6i7y}{Zdroj: Wikipedie}}
+\end{itemize}
+\begin{verbatim}
+ limit := počet_prvků;
+   opakuj
+       bylo_seřazeno := ano;
+       limit := limit - 1;
+       pro i od 1 do limit opakuj:
+           pokud seznam[i] > seznam[i + 1]
+               zaměň(seznam[i], seznam[i + 1])
+               bylo_seřazeno := ne;
+   dokud není bylo_seřazeno == ano nebo limit == 1;
+\end{verbatim}
+

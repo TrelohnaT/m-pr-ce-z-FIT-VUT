@@ -1,0 +1,12 @@
+1	: HACK 1	: starts
+2	: HACK 1	: waits 	 : 1	: 0
+10	: HACK 1	: member exits	 : 0	: 0
+5	: SERF 1	: starts
+6	: SERF 1	: waits 	 : 2	: 1
+11	: SERF 1	: member exits	 : 0	: 0
+3	: HACK 2	: starts
+4	: HACK 2	: waits 	 : 2	: 0
+9	: HACK 2	: member exits	 : 0	: 0
+7	: SERF 2	: starts
+8	: SERF 2	: boards	 : 0	: 0
+12	: SERF 2	: capitan exits	 : 0	: 0

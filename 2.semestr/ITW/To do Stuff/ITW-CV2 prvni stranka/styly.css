@@ -1,0 +1,119 @@
+body
+{}
+
+.ITWn
+{
+    color: white;
+    font-size: 30pt;
+    font-family: Arial;
+}
+h1
+{
+    color: #d5a17c;
+    font-size: 18pt;
+    margin-bottom: 0.8em;
+}
+
+a
+{
+    color: white;
+    text-decoration: none;
+}
+.ITW {
+    background-image: url('obrazky/bg.jpg');
+    background-repeat: repeat-x;
+    background-size: contain;
+    padding: 1em 15em 2.5em 15em;
+    padding-bottom: 50px;
+    padding-top: 0px;
+}
+
+.O_předmětu_ITW
+{
+}
+
+h2
+{
+  color: #d5a17c;
+}
+
+.levaS
+{
+    float: left;
+    clear: left;
+    background-color: white;
+    margin-right: 100px;
+}
+
+.Přednášky
+{
+    padding: 1em 15em 2.5em 15em;
+
+}
+
+.1_cast
+{
+    width: 50%;
+    float: left;
+    clear: left;
+}
+
+.2_cast
+{
+    width: 50%;
+}
+
+.Přehled_výsledků
+{
+    padding: 1em 15em 2.5em 15em;
+
+}
+
+.Cvičení
+{
+    padding: 1em 15em 2.5em 15em;
+    background-color: lightgrey;
+}
+
+
+h3 > a
+{
+  color: black;
+}
+
+.Cvičení p
+{
+    margin-bottom: 100px;
+    margin-right: 20px;
+}
+img
+{
+  padding-right: 1cm;
+}
+
+.Konec
+{
+    padding: 1em 15em 2.5em 15em ;
+    background-color: #3c1f0a;
+}
+
+.kontakt
+{
+    float: left;
+    clear: left;
+    padding-right: 450px;
+}
+
+.odkaz
+{
+    padding-left: 960px;
+}
+.Konec h2, a
+{
+    color: white;
+}
+
+.Konec p
+{
+        color: #d5a17c;
+}
